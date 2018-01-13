@@ -3,9 +3,9 @@
 namespace Swoft\Task\Bean\Parser;
 
 use Swoft\Bean\Annotation\Scope;
-use Swoft\Bean\Collector;
+use Swoft\Bean\Parser\AbstractParserInterface;
 use Swoft\Task\Bean\Annotation\Task;
-use Swoft\Task\Collector\TaskCollector;
+use Swoft\Task\Bean\Collector\TaskCollector;
 
 /**
  * task注解解析

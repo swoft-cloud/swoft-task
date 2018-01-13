@@ -2,10 +2,9 @@
 
 namespace Swoft\Task\Bean\Parser;
 
-use Swoft\Bean\Collector;
 use Swoft\Bean\Parser\AbstractParserInterface;
 use Swoft\Task\Bean\Annotation\Scheduled;
-use Swoft\Task\Collector\TaskCollector;
+use Swoft\Task\Bean\Collector\TaskCollector;
 
 /**
  * ScheduledParser注解解析

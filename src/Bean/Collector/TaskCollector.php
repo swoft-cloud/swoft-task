@@ -1,6 +1,6 @@
 <?php
 
-namespace Swoft\Task\Collector;
+namespace Swoft\Task\Bean\Collector;
 
 use Swoft\Bean\CollectorInterface;
 use Swoft\Task\Bean\Annotation\Scheduled;

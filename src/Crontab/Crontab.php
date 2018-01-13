@@ -6,7 +6,7 @@ use Swoft\Core\ApplicationContext;
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Memory\Table;
 use Swoft\App;
-use Swoft\Task\Collector\TaskCollector;
+use Swoft\Task\Bean\Collector\TaskCollector;
 
 /**
  * crontab定时任务

@@ -2,7 +2,7 @@
 
 namespace Swoft\Task\Bean\Parser;
 
-use Swoft\Bean\Parser\AbstractParserInterface;
+use Swoft\Bean\Parser\AbstractParser;
 use Swoft\Task\Bean\Annotation\Scheduled;
 use Swoft\Task\Bean\Collector\TaskCollector;
 
@@ -15,7 +15,7 @@ use Swoft\Task\Bean\Collector\TaskCollector;
  * @copyright Copyright 2010-2016 swoft software
  * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
  */
-class ScheduledParser extends AbstractParserInterface
+class ScheduledParser extends AbstractParser
 {
     /**
      * ScheduledParser注解解析

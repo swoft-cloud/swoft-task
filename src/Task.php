@@ -140,7 +140,7 @@ class Task
             }
 
             $type = $task['type'];
-            if ($type != self::TYPE_ASYNC) {
+            if ($type != self::TYPE_COR) {
                 App::warning("投递的不是协程任务，task=" . json_encode($task));
                 continue;
             }

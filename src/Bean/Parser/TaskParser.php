@@ -8,32 +8,29 @@ use Swoft\Task\Bean\Annotation\Task;
 use Swoft\Task\Bean\Collector\TaskCollector;
 
 /**
- * task注解解析
- *
- * @uses      TaskParser
- * @version   2017年09月24日
- * @author    stelin <phpcrazy@126.com>
- * @copyright Copyright 2010-2016 swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
+ * Task annotation parser
  */
 class TaskParser extends AbstractParserInterface
 {
     /**
-     * task注解解析
-     *
      * @param string $className
-     * @param Task $objectAnnotation
+     * @param Task   $objectAnnotation
      * @param string $propertyName
      * @param string $methodName
-     * @param null $propertyValue
+     * @param null   $propertyValue
      * @return array
      */
-    public function parser(string $className, $objectAnnotation = null, string $propertyName = "", string $methodName = "", $propertyValue = null)
-    {
+    public function parser(
+        string $className,
+        $objectAnnotation = null,
+        string $propertyName = '',
+        string $methodName = '',
+        $propertyValue = null
+    ) {
         $name = $objectAnnotation->getName();
         $beanName = empty($name) ? $className : $name;
 
         TaskCollector::collect($className, $objectAnnotation, $propertyName, $methodName, $propertyValue);
-        return [$beanName, Scope::SINGLETON, ""];
+        return [$beanName, Scope::SINGLETON, ''];
     }
 }

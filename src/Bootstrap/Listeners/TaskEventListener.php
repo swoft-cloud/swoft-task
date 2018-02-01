@@ -15,34 +15,42 @@ use Swoole\Server;
 use Swoft\Bootstrap\SwooleEvent;
 
 /**
- * the listener of swoole task
- *
+ * The listener of swoole task
  * @SwooleListener({
  *     SwooleEvent::ON_TASK,
  *     SwooleEvent::ON_FINISH,
  *     SwooleEvent::ON_PIPE_MESSAGE
  * })
- * @uses      TaskEventListener
- * @version   2018年01月13日
- * @author    stelin <phpcrazy@126.com>
- * @copyright Copyright 2010-2016 swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
  */
-class TaskEventListener implements TaskInterface,PipeMessageInterface,FinishInterface
+class TaskEventListener implements TaskInterface, PipeMessageInterface, FinishInterface
 {
     public function onFinish(Server $server, int $taskId, string $data)
     {
         var_dump($data);
     }
 
+    /**
+     * @param \Swoole\Server $server
+     * @param int            $srcWorkerId
+     * @param string         $message
+     * @return void
+     */
     public function onPipeMessage(Server $server, int $srcWorkerId, string $message)
     {
         list($type, $data) = PipeMessage::unpack($message);
-        if ($type == PipeMessage::TYPE_TASK) {
+        if ($type === PipeMessage::TYPE_TASK) {
             $this->onPipeMessageTask($data);
         }
     }
 
+    /**
+     * @param \Swoole\Server $server
+     * @param int            $taskId
+     * @param int            $workerId
+     * @param mixed          $data
+     * @return mixed
+     * @throws \InvalidArgumentException
+     */
     public function onTask(Server $server, int $taskId, int $workerId, $data)
     {
         Task::setId($taskId);
@@ -53,7 +61,7 @@ class TaskEventListener implements TaskInterface,PipeMessageInterface,FinishInte
         $type = $task['type'];
         $method = $task['method'];
         $params = $task['params'];
-        $logid = $task['logid'] ?? uniqid();
+        $logid = $task['logid'] ?? uniqid('', true);
         $spanid = $task['spanid'] ?? 0;
 
         $event = new BeforeTaskEvent(TaskEvent::BEFORE_TASK, $logid, $spanid, $name, $method, $type);
@@ -61,27 +69,27 @@ class TaskEventListener implements TaskInterface,PipeMessageInterface,FinishInte
         $result = Task::run($name, $method, $params);
         App::trigger(TaskEvent::AFTER_TASK, null, $type);
 
-        if ($type == Task::TYPE_CRON) {
+        if ($type === Task::TYPE_CRON) {
             return $result;
         }
         $server->finish($result);
     }
 
     /**
-     * 任务类型的管道消息
+     * Pipe message on task
      *
-     * @param array $data 数据
+     * @param array $data
      */
     private function onPipeMessageTask(array $data)
     {
-        // 任务信息
+        // Task info
         $type = $data['type'];
         $taskName = $data['name'];
         $params = $data['params'];
         $timeout = $data['timeout'];
         $methodName = $data['method'];
 
-        // 投递任务
+        // delever task
         Task::deliver($taskName, $methodName, $params, $type, $timeout);
     }
 }

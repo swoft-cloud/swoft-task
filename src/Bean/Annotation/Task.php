@@ -3,16 +3,10 @@
 namespace Swoft\Task\Bean\Annotation;
 
 /**
- * task注解
+ * Task annotation
  *
  * @Annotation
  * @Target("CLASS")
- *
- * @uses      Task
- * @version   2017年09月24日
- * @author    stelin <phpcrazy@126.com>
- * @copyright Copyright 2010-2016 swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
  */
 class Task
 {
@@ -21,7 +15,7 @@ class Task
      *
      * @var string
      */
-    private $name = "";
+    private $name = '';
 
     /**
      * Bean constructor.

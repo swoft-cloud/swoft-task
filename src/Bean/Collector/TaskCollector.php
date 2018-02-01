@@ -7,13 +7,7 @@ use Swoft\Task\Bean\Annotation\Scheduled;
 use Swoft\Task\Bean\Annotation\Task;
 
 /**
- * the collector of task
- *
- * @uses      TaskCollector
- * @version   2018年01月12日
- * @author    stelin <phpcrazy@126.com>
- * @copyright Copyright 2010-2016 swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
+ * Task annotation collector
  */
 class TaskCollector implements CollectorInterface
 {
@@ -30,8 +24,13 @@ class TaskCollector implements CollectorInterface
      * @param string $methodName
      * @param null   $propertyValue
      */
-    public static function collect(string $className, $objectAnnotation = null, string $propertyName = "", string $methodName = "", $propertyValue = null)
-    {
+    public static function collect(
+        string $className,
+        $objectAnnotation = null,
+        string $propertyName = '',
+        string $methodName = '',
+        $propertyValue = null
+    ) {
         if ($objectAnnotation instanceof Task) {
             self::collectTask($className, $objectAnnotation);
 
@@ -48,7 +47,7 @@ class TaskCollector implements CollectorInterface
     /**
      * @return array
      */
-    public static function getCollector()
+    public static function getCollector(): array
     {
         return self::$tasks;
     }
@@ -61,7 +60,7 @@ class TaskCollector implements CollectorInterface
      */
     private static function collectTask(string $className, Task $objectAnnotation)
     {
-        $name     = $objectAnnotation->getName();
+        $name = $objectAnnotation->getName();
         $beanName = empty($name) ? $className : $name;
 
         self::$tasks[$className]['task'] = $beanName;
@@ -76,7 +75,7 @@ class TaskCollector implements CollectorInterface
      */
     private static function collectScheduled(string $className, Scheduled $objectAnnotation, string $methodName)
     {
-        $cron     = $objectAnnotation->getCron();
+        $cron = $objectAnnotation->getCron();
         $taskName = self::$tasks[$className]['task'];
 
         $task = [

@@ -9,14 +9,8 @@ use Swoft\Bootstrap\Server\AbstractServer;
 use Swoft\Task\Crontab\TableCrontab;
 
 /**
- * the listener of before start
- *
+ * The listener of before start
  * @BeforeStart()
- * @uses      BeforeStartListener
- * @version   2018年01月12日
- * @author    stelin <phpcrazy@126.com>
- * @copyright Copyright 2010-2016 swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
  */
 class BeforeStartListener implements BeforeStartInterface
 {
@@ -28,7 +22,8 @@ class BeforeStartListener implements BeforeStartInterface
         /** @var array[] $settings */
         $settings = App::getAppProperties()->get('server');
         $settings = $settings['server'];
-        // 初始化定时任务共享内存表
+
+        // Init crontab share memory table
         if (isset($settings['cronable']) && (int)$settings['cronable'] === 1) {
             $this->initCrontabMemoryTable();
         }

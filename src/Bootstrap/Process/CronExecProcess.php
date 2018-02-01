@@ -8,14 +8,8 @@ use Swoft\Bootstrap\Process\AbstractProcessInterface;
 use Swoole\Process;
 
 /**
- * Crontab执行进程
- *
+ * Crontab process
  * @BootProcess("cronExec")
- * @uses      CronExecProcess
- * @version   2017年10月22日
- * @author    caiwh <471113744@qq.com>
- * @copyright Copyright 2010-2016 swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
  */
 class CronExecProcess extends AbstractProcessInterface
 {
@@ -24,7 +18,9 @@ class CronExecProcess extends AbstractProcessInterface
      */
     public function run(Process $process)
     {
-        $process->name($this->server->getPname() . " cronexec process ");
+        $process->name($this->server->getPname() . ' cronexec process ');
+
+        /** @var \Swoft\Task\Crontab\Crontab $cron */
         $cron = App::getBean('crontab');
 
         // Swoole/HttpServer
@@ -32,9 +28,9 @@ class CronExecProcess extends AbstractProcessInterface
 
         $server->tick(0.5 * 1000, function () use ($cron) {
             $tasks = $cron->getExecTasks();
-            if (!empty($tasks)) {
+            if (! empty($tasks)) {
                 foreach ($tasks as $task) {
-                    // 投递任务
+                    // Diliver task
                     $this->task($task['taskClass'], $task['taskMethod']);
                     $cron->finishTask($task['key']);
                 }
@@ -43,7 +39,7 @@ class CronExecProcess extends AbstractProcessInterface
     }
 
     /**
-     * 进程启动准备工作
+     * Is it ready to start ?
      *
      * @return bool
      */

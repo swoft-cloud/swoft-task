@@ -3,14 +3,14 @@
 namespace Swoft\Task\Bean\Parser;
 
 use Swoft\Bean\Annotation\Scope;
-use Swoft\Bean\Parser\AbstractParserInterface;
+use Swoft\Bean\Parser\AbstractParser;
 use Swoft\Task\Bean\Annotation\Task;
 use Swoft\Task\Bean\Collector\TaskCollector;
 
 /**
  * Task annotation parser
  */
-class TaskParser extends AbstractParserInterface
+class TaskParser extends AbstractParser
 {
     /**
      * @param string $className

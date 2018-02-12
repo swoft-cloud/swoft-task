@@ -51,6 +51,11 @@ class BeforeTaskEvent extends Event
     private $type;
 
     /**
+     * @var string
+     */
+    private $taskClass;
+
+    /**
      * BeforeTaskEvent constructor.
      * @param null $name
      * @param string $logid
@@ -58,9 +63,10 @@ class BeforeTaskEvent extends Event
      * @param string $taskName
      * @param string $method
      * @param string $type
+     * @param string $taskClass
      * @throws \InvalidArgumentException
      */
-    public function __construct($name = null, string $logid, int $spanid, string $taskName, string $method, string $type)
+    public function __construct($name = null, string $logid, int $spanid, string $taskName, string $method, string $type, string $taskClass)
     {
         parent::__construct($name);
 
@@ -69,6 +75,7 @@ class BeforeTaskEvent extends Event
         $this->spanid = $spanid;
         $this->method = $method;
         $this->taskName = $taskName;
+        $this->taskClass = $taskClass;
     }
 
     /**
@@ -109,5 +116,13 @@ class BeforeTaskEvent extends Event
     public function getType(): string
     {
         return $this->type;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTaskClass(): string
+    {
+        return $this->taskClass;
     }
 }

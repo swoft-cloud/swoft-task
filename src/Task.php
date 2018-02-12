@@ -3,108 +3,125 @@
 namespace Swoft\Task;
 
 use Swoft\App;
-use Swoft\Core\RequestContext;
 use Swoft\Bean\BeanFactory;
+use Swoft\Pipe\PipeMessage;
+use Swoft\Pipe\PipeMessageInterface;
+use Swoft\Task\Helper\TaskHelper;
 
 /**
- * 任务处理
- *
- * @uses      Task
- * @version   2017年09月24日
- * @author    stelin <phpcrazy@126.com>
- * @copyright Copyright 2010-2016 swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
- *
+ * The task
  */
 class Task
 {
     /**
-     * 协程任务
+     * Coroutine task
      */
-    const TYPE_COR = 'cor';
+    const TYPE_CO = 'co';
 
     /**
-     * 异步任务
+     * Async task
      */
     const TYPE_ASYNC = 'async';
 
     /**
-     * 定时任务
+     * Crontab task
      */
     const TYPE_CRON = 'cron';
 
     /**
-     * @var string
-     */
-    private static $id;
-
-    /**
-     * 投递任务
+     * Deliver coroutine or async task
      *
-     * @param string $taskName   任务名称
-     * @param string $methodName 任务job(类方法名)
-     * @param array  $params     参数
-     * @param string $type       类型默认协程任务投递
-     * @param int    $timeout    超时时间单位秒
+     * @param string $taskName
+     * @param string $methodName
+     * @param array  $params
+     * @param string $type
+     * @param int    $timeout
      *
-     * @return  mixed
+     * @return bool|array
      */
-    public static function deliver(string $taskName, string $methodName, array $params = [], string $type = self::TYPE_COR, $timeout = 3)
+    public static function deliver(string $taskName, string $methodName, array $params = [], string $type = self::TYPE_CO, $timeout = 3)
     {
-        // httpServer
         $server = App::$server->getServer();
-        $data = self::packTaskData($taskName, $methodName, $params, $type);
+        $data   = TaskHelper::pack($taskName, $methodName, $params, $type);
 
-        // 投递协程任务
-        if ($type == self::TYPE_COR) {
-            $tasks[0] = $data;
+        // Delier coroutine task
+        if ($type == self::TYPE_CO) {
+            $tasks[0]  = $data;
             $prifleKey = 'task' . '.' . $taskName . '.' . $methodName;
 
             App::profileStart($prifleKey);
             $result = $server->taskCo($tasks, $timeout);
             App::profileEnd($prifleKey);
+
             return $result;
         }
 
-        // 投递异步任务
+        // Deliver async task
         return $server->task($data);
     }
 
     /**
-     * 投递异步多个任务
+     * Deliver task by process
      *
-     * @param array $tasks 多个任务
+     * @param string $taskName
+     * @param string $methodName
+     * @param array  $params
+     * @param string $type
+     * @param int    $timeout
+     * @param int    $workId
      *
-     * <pre>
-     * $tasks = [
+     * @return bool
+     */
+    public static function deliverByProcess(string $taskName, string $methodName, array $params = [], int $timeout = 3, int $workId = 0, string $type = self::TYPE_ASYNC): bool
+    {
+        /* @var PipeMessageInterface $pipeMessage */
+        $server      = App::$server->getServer();
+        $pipeMessage = App::getBean(PipeMessage::class);
+        $data = [
+            'name'    => $taskName,
+            'method'  => $methodName,
+            'params'  => $params,
+            'timeout' => $timeout,
+            'type'    => $type,
+        ];
+
+        $message = $pipeMessage->pack(PipeMessage::MESSAGE_TYPE_TASK, $data);
+        return $server->sendMessage($message, $workId);
+    }
+
+    /**
+     * Delivery multiple asynchronous tasks
+     *
+     * @param array $tasks
+     *  <pre>
+     *  $task = [
      *  'name'   => $taskName,
      *  'method' => $methodName,
      *  'params' => $params,
      *  'type'   => $type
-     * ];
-     * </pre>
+     *  ];
+     *  </pre>
      *
      * @return array
      */
-    public static function asyncs(array $tasks)
+    public static function async(array $tasks)
     {
-        // httpServer
         $server = App::$server->getServer();
 
         $result = [];
         foreach ($tasks as $task) {
             if (!isset($task['type']) || !isset($task['name']) || !isset($task['method']) || !isset($task['params'])) {
-                App::warning("投递的任务格式不完整，task=" . json_encode($task));
+                App::warning(sprintf('The task format of delivery is error，task=%s', json_encode($task, JSON_UNESCAPED_UNICODE)));
                 continue;
             }
 
             $type = $task['type'];
             if ($type != self::TYPE_ASYNC) {
-                App::warning("投递的不是异步任务，task=" . json_encode($task));
+                App::warning(sprintf('Delivery is not an asynchronous task，task=%s', json_encode($task, JSON_UNESCAPED_UNICODE)));
                 continue;
             }
 
-            $data = serialize($type);
+            $data     = TaskHelper::pack($task['name'], $task['method'], $task['params'], $task['type']);
             $result[] = $server->task($data);
         }
 
@@ -112,123 +129,78 @@ class Task
     }
 
     /**
-     * 投递协程多个任务
+     * Delivery multiple co tasks
      *
-     * @param array $tasks 多个任务
-     *
-     * <pre>
-     * $tasks = [
+     * @param array $tasks
+     *  <pre>
+     *  $tasks = [
      *  'name'   => $taskName,
      *  'method' => $methodName,
      *  'params' => $params,
      *  'type'   => $type
-     * ];
-     * </pre>
+     *  ];
+     *  </pre>
      *
      * @return array
      */
-    public static function cors(array $tasks)
+    public static function cor(array $tasks)
     {
-        // httpServer
         $server = App::$server->getServer();
 
         $taskCos = [];
         foreach ($tasks as $task) {
             if (!isset($task['type']) || !isset($task['name']) || !isset($task['method']) || !isset($task['params'])) {
-                App::warning("投递的任务格式不完整，task=" . json_encode($task));
+                App::warning(sprintf('The task format of delivery is error，task=%s', json_encode($task, JSON_UNESCAPED_UNICODE)));
                 continue;
             }
 
             $type = $task['type'];
-            if ($type != self::TYPE_COR) {
-                App::warning("投递的不是协程任务，task=" . json_encode($task));
+            if ($type != self::TYPE_CO) {
+                App::warning(sprintf('Delivery is not a co task，task=%s', json_encode($task, JSON_UNESCAPED_UNICODE)));
                 continue;
             }
 
-            $taskCos[] = serialize($task);
+            $taskCos[] = TaskHelper::pack($task['name'], $task['method'], $task['params'], $task['type']);
         }
 
         $result = [];
         if (!empty($taskCos)) {
             $result = $server->taskCo($tasks);
         }
+
         return $result;
     }
 
     /**
-     * 执行任务
+     * Run job by task
      *
-     * @param string $taskName   任务名称
-     * @param string $methodName 任务job(类方法名)
-     * @param array  $params     参数
+     * @param string $taskName
+     * @param string $methodName
+     * @param array  $params
      *
-     * @return  mixed
+     * @return bool
      */
-    public static function run(string $taskName, string $methodName, array $params)
+    public static function run2(string $taskName, string $methodName, array $params)
     {
         if (!BeanFactory::hasBean($taskName)) {
-            //            App::error("task不存在，taskName=" . $taskName);
+            App::error(sprintf('The %s task is not exist! ', $taskName));
+
             return false;
         }
 
         $task = App::getBean($taskName);
         if (!method_exists($task, $methodName)) {
-            //            App::error("task执行的job方法不存在，taskName=" . $taskName." methodName=".$methodName);
+            App::error(sprintf('The %s job of %s task is not exist! ', $methodName, $taskName));
+
             return false;
         }
 
         $profileKey = $taskName . "-" . $methodName;
-        //        App::profileStart($profileKey);
+        App::profileStart($profileKey);
         $result = $task->$methodName(...$params);
-        //        App::profileEnd($profileKey);
+
+        App::profileEnd($profileKey);
 
         return $result;
-    }
-
-    /**
-     * 任务ID
-     *
-     * @return string
-     */
-    public static function getId(): string
-    {
-        return self::$id;
-    }
-
-    /**
-     * 初始化REN
-     *
-     * @param string $id
-     */
-    public static function setId(string $id)
-    {
-        self::$id = $id;
-    }
-
-    /**
-     * 任务数据打包
-     *
-     * @param string $taskName   任务名称
-     * @param string $methodName 任务job(类方法名)
-     * @param array  $params     参数
-     * @param string $type       类型默认协程任务投递
-     *
-     * @return  string
-     */
-    private static function packTaskData(string $taskName, string $methodName, array $params, string $type = self::TYPE_COR)
-    {
-        $task = [
-            'name'   => $taskName,
-            'method' => $methodName,
-            'params' => $params,
-            'type'   => $type
-        ];
-
-        // 不是定时任务，传递logid和spanid
-        if ($type !== self::TYPE_CRON) {
-            $task['logid'] = RequestContext::getLogid();
-            $task['spanid'] = RequestContext::getSpanid();
-        }
-        return serialize($task);
     }
 }

@@ -18,6 +18,11 @@ class Task
     private $name = '';
 
     /**
+     * @var bool
+     */
+    private $coroutine = false;
+
+    /**
      * Bean constructor.
      *
      * @param array $values
@@ -27,8 +32,13 @@ class Task
         if (isset($values['value'])) {
             $this->name = $values['value'];
         }
+
         if (isset($values['name'])) {
             $this->name = $values['name'];
+        }
+
+        if (isset($values['coroutine'])) {
+            $this->coroutine = $values['coroutine'];
         }
     }
 
@@ -40,5 +50,13 @@ class Task
     public function getName(): string
     {
         return $this->name;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCoroutine(): bool
+    {
+        return $this->coroutine;
     }
 }

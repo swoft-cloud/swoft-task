@@ -3,28 +3,23 @@
 namespace Swoft\Task\Bootstrap\Process;
 
 use Swoft\App;
-use Swoft\Bean\Annotation\BootProcess;
-use Swoft\Bootstrap\Process\AbstractProcessInterface;
-use Swoole\Process;
+use Swoft\Process\Process as SwoftProcess;
+use Swoft\Process\ProcessInterface;
 
 /**
  * Crontab process
- * @BootProcess("cronExec")
  */
-class CronExecProcess extends AbstractProcessInterface
+class CronExecProcess implements ProcessInterface
 {
-    /**
-     * @param Process $process
-     */
-    public function run(Process $process)
+    public function run(SwoftProcess $process)
     {
-        $process->name($this->server->getPname() . ' cronexec process ');
+        $process->name(App::$server->getPname() . ' cronexec process ');
 
         /** @var \Swoft\Task\Crontab\Crontab $cron */
         $cron = App::getBean('crontab');
 
         // Swoole/HttpServer
-        $server = $this->server->getServer();
+        $server = App::$server->getServer();
 
         $server->tick(0.5 * 1000, function () use ($cron) {
             $tasks = $cron->getExecTasks();

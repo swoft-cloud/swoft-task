@@ -3,20 +3,15 @@
 namespace Swoft\Task\Bootstrap\Process;
 
 use Swoft\App;
-use Swoft\Bean\Annotation\BootProcess;
-use Swoft\Bootstrap\Process\AbstractProcessInterface;
-use Swoole\Process;
+use Swoft\Process\Process as SwoftProcess;
+use Swoft\Process\ProcessInterface;
 
 /**
  * Crontab timer process
- * @BootProcess("cronTimer")
  */
-class CronTimerProcess extends AbstractProcessInterface
+class CronTimerProcess implements ProcessInterface
 {
-    /**
-     * @param Process $process
-     */
-    public function run(Process $process)
+    public function run(SwoftProcess $process)
     {
         $process->name($this->server->getPname() . ' crontimer process ');
         $cron = App::getBean('crontab');
@@ -33,6 +28,7 @@ class CronTimerProcess extends AbstractProcessInterface
             });
         });
     }
+
 
     /**
      * Is it ready to start ?

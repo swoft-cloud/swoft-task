@@ -23,6 +23,7 @@ class TaskCollector implements CollectorInterface
      * @param string $propertyName
      * @param string $methodName
      * @param null   $propertyValue
+     * @return void
      */
     public static function collect(
         string $className,
@@ -45,14 +46,6 @@ class TaskCollector implements CollectorInterface
     }
 
     /**
-     * @return array
-     */
-    public static function getCollector(): array
-    {
-        return self::$tasks;
-    }
-
-    /**
      * collect the annotation of task
      *
      * @param string $className
@@ -62,8 +55,12 @@ class TaskCollector implements CollectorInterface
     {
         $name = $objectAnnotation->getName();
         $beanName = empty($name) ? $className : $name;
+        $coroutine = $objectAnnotation->isCoroutine();
 
-        self::$tasks[$className]['task'] = $beanName;
+        self::$tasks[$beanName]['task'] = [
+            $className,
+            $coroutine
+        ];
     }
 
     /**
@@ -86,6 +83,14 @@ class TaskCollector implements CollectorInterface
         ];
 
         self::$tasks[$className]['crons'][] = $task;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getCollector(): array
+    {
+        return self::$tasks;
     }
 
 }

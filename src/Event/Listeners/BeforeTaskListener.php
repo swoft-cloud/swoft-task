@@ -6,7 +6,6 @@ use Swoft\App;
 use Swoft\Core\RequestContext;
 use Swoft\Bean\Annotation\Listener;
 use Swoft\Event\EventInterface;
-use Swoft\Event\Events\BeforeTaskEvent;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Task\Event\TaskEvent;
 
@@ -29,14 +28,14 @@ class BeforeTaskListener implements EventHandlerInterface
      */
     public function handle(EventInterface $event)
     {
-        /* @var BeforeTaskEvent $beforeEvent*/
+        /* @var \Swoft\Task\Event\Events\BeforeTaskEvent $beforeEvent*/
         $beforeEvent = $event;
 
         $logid = $beforeEvent->getLogid();
         $spanid = $beforeEvent->getSpanid();
         $method = $beforeEvent->getMethod();
-        $taskName = $beforeEvent->getTaskName();
-        $uri = 'task.'.$taskName.'.'.$method;
+        $taskClass = $beforeEvent->getTaskClass();
+        $uri = sprintf('%s->%s', $taskClass, $method);
 
         $contextData = [
             'logid'       => $logid,

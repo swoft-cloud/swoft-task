@@ -22,4 +22,9 @@ class TaskEvent
      * after task
      */
     const AFTER_TASK = "afterTask";
+
+    /**
+     * Task finish event
+     */
+    const FINISH_TASK = 'finish';
 }

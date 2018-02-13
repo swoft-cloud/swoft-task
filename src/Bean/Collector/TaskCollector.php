@@ -18,6 +18,11 @@ class TaskCollector implements CollectorInterface
     private static $tasks = [];
 
     /**
+     * @var array
+     */
+    private static $crons = [];
+
+    /**
      * @param string $className
      * @param object $objectAnnotation
      * @param string $propertyName
@@ -57,7 +62,8 @@ class TaskCollector implements CollectorInterface
         $beanName = empty($name) ? $className : $name;
         $coroutine = $objectAnnotation->isCoroutine();
 
-        self::$tasks[$beanName]['task'] = [
+        self::$tasks['mapping'][$className] = $beanName;
+        self::$tasks['task'][$beanName] = [
             $className,
             $coroutine
         ];
@@ -72,17 +78,19 @@ class TaskCollector implements CollectorInterface
      */
     private static function collectScheduled(string $className, Scheduled $objectAnnotation, string $methodName)
     {
-        $cron = $objectAnnotation->getCron();
-        $taskName = self::$tasks[$className]['task'];
+        if (!isset(self::$tasks['mapping'][$className])) {
+            return;
+        }
 
-        $task = [
-            'cron'   => $cron,
-            'task'   => $taskName,
-            'method' => $methodName,
-            'type'   => \Swoft\Task\Task::TYPE_CRON,
+        $cron     = $objectAnnotation->getCron();
+        $taskName = self::$tasks['mapping'][$className];
+
+        self::$tasks['crons'][] = [
+            'cron'      => $cron,
+            'task'      => $taskName,
+            'method'    => $methodName,
+            'className' => $className,
         ];
-
-        self::$tasks[$className]['crons'][] = $task;
     }
 
     /**

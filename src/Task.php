@@ -24,11 +24,6 @@ class Task
     const TYPE_ASYNC = 'async';
 
     /**
-     * Crontab task
-     */
-    const TYPE_CRON = 'cron';
-
-    /**
      * Deliver coroutine or async task
      *
      * @param string $taskName

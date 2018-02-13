@@ -41,9 +41,7 @@ class Crontab
      */
     public function init(): bool
     {
-        // 非cli命令行
-        $context = ApplicationContext::getContext();
-        if ($context === ApplicationContext::CONSOLE) {
+        if (App::$server === null) {
             return false;
         }
         $serverSetting = App::$server->getServerSetting();
@@ -63,10 +61,11 @@ class Crontab
      */
     private function initTasks(): array
     {
-        $tasks = TaskCollector::getCollector();
+        $collector = TaskCollector::getCollector();
 
-        if (! empty($tasks)) {
-            $tasks = array_column($tasks, 'crons');
+        $tasks = [];
+        if (isset($collector['crons'])) {
+            $tasks = $collector['crons'];
         }
 
         return $this->setTasks($tasks);
@@ -85,20 +84,18 @@ class Crontab
             return false;
         }
 
-        foreach ($tasks as $tasksIndex => $taskItem) {
-            foreach ($taskItem ?? [] as $taskIndex => $task) {
-                $this->checkTaskCount();
-                $time = time();
-                $key = $this->getKey($task['cron'], $task['task'], $task['method']);
-                // 防止重复写入任务
-                if (! $this->getOriginTable()->exist($key)) {
-                    $this->getOriginTable()->set($key, [
-                        'rule'       => $task['cron'],
-                        'taskClass'  => $task['task'],
-                        'taskMethod' => $task['method'],
-                        'add_time'   => $time
-                    ]);
-                }
+        foreach ($tasks as $tasksIndex => $task) {
+            $this->checkTaskCount();
+            $time = time();
+            $key = $this->getKey($task['cron'], $task['task'], $task['method']);
+            // 防止重复写入任务
+            if (! $this->getOriginTable()->exist($key)) {
+                $this->getOriginTable()->set($key, [
+                    'rule'       => $task['cron'],
+                    'taskClass'  => $task['task'],
+                    'taskMethod' => $task['method'],
+                    'add_time'   => $time
+                ]);
             }
         }
 

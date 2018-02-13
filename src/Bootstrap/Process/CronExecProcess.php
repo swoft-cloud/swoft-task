@@ -3,17 +3,25 @@
 namespace Swoft\Task\Bootstrap\Process;
 
 use Swoft\App;
+use Swoft\Process\Bean\Annotation\Process;
 use Swoft\Process\Process as SwoftProcess;
 use Swoft\Process\ProcessInterface;
+use Swoft\Task\Task;
 
 /**
  * Crontab process
+ *
+ * @Process(name="cronExec", boot=true)
  */
 class CronExecProcess implements ProcessInterface
 {
+    /**
+     * @param \Swoft\Process\Process $process
+     */
     public function run(SwoftProcess $process)
     {
-        $process->name(App::$server->getPname() . ' cronexec process ');
+        $pname = App::$server->getPname();
+        $process->name(sprintf('%s cronexec process', $pname));
 
         /** @var \Swoft\Task\Crontab\Crontab $cron */
         $cron = App::getBean('crontab');
@@ -23,10 +31,10 @@ class CronExecProcess implements ProcessInterface
 
         $server->tick(0.5 * 1000, function () use ($cron) {
             $tasks = $cron->getExecTasks();
-            if (! empty($tasks)) {
+            if (!empty($tasks)) {
                 foreach ($tasks as $task) {
                     // Diliver task
-                    $this->task($task['taskClass'], $task['taskMethod']);
+                    Task::deliverByProcess($task['taskClass'], $task['taskMethod']);
                     $cron->finishTask($task['key']);
                 }
             }
@@ -34,15 +42,14 @@ class CronExecProcess implements ProcessInterface
     }
 
     /**
-     * Is it ready to start ?
-     *
      * @return bool
      */
-    public function isReady(): bool
+    public function check(): bool
     {
-        $serverSetting = $this->server->getServerSetting();
+        $serverSetting = App::$server->getServerSetting();
         $cronable = (int)$serverSetting['cronable'];
         if ($cronable !== 1) {
+            output()->writeln('<info>If crontab is to be used, Please set CRONABLE=true by .env file</info>');
             return false;
         }
 

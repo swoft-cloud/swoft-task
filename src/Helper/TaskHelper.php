@@ -27,10 +27,8 @@ class TaskHelper
             'type'   => $type,
         ];
 
-        if ($type !== Task::TYPE_CRON) {
-            $task['logid']  = RequestContext::getLogid();
-            $task['spanid'] = RequestContext::getSpanid();
-        }
+        $task['logid']  = RequestContext::getLogid();
+        $task['spanid'] = RequestContext::getSpanid();
 
         return serialize($task);
     }

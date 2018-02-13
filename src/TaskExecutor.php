@@ -36,11 +36,11 @@ class TaskExecutor
 
 
         $collector = TaskCollector::getCollector();
-        if (!isset($collector[$name]['task'])) {
+        if (!isset($collector['task'][$name])) {
             return false;
         }
 
-        list(, $coroutine) = $collector[$name]['task'];
+        list(, $coroutine) = $collector['task'][$name];
         $task = App::getBean($name);
 
         if ($coroutine) {

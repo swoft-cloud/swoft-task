@@ -3,21 +3,30 @@
 namespace Swoft\Task\Bootstrap\Process;
 
 use Swoft\App;
+use Swoft\Process\Bean\Annotation\Process;
 use Swoft\Process\Process as SwoftProcess;
 use Swoft\Process\ProcessInterface;
 
 /**
  * Crontab timer process
+ *
+ * @Process(name="cronTimer", boot=true)
  */
 class CronTimerProcess implements ProcessInterface
 {
+    /**
+     * @param \Swoft\Process\Process $process
+     */
     public function run(SwoftProcess $process)
     {
-        $process->name($this->server->getPname() . ' crontimer process ');
+        $pname = App::$server->getPname();
+        $process->name(sprintf('%s crontimer process', $pname));
+
+        /* @var \Swoft\Task\Crontab\Crontab $cron*/
         $cron = App::getBean('crontab');
 
         // Swoole/HttpServer
-        $server = $this->server->getServer();
+        $server = App::$server->getServer();
 
         $time = (60 - date('s')) * 1000;
         $server->after($time, function () use ($server, $cron) {
@@ -29,20 +38,17 @@ class CronTimerProcess implements ProcessInterface
         });
     }
 
-
     /**
-     * Is it ready to start ?
-     *
      * @return bool
      */
-    public function isReady(): bool
+    public function check(): bool
     {
-        $serverSetting = $this->server->getServerSetting();
+        $serverSetting = App::$server->getServerSetting();
         $cronable = (int)$serverSetting['cronable'];
         if ($cronable !== 1) {
+            output()->writeln('<info>If crontab is to be used, Please set CRONABLE=true by .env file</info>');
             return false;
         }
-
         return true;
     }
 }

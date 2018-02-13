@@ -26,11 +26,6 @@ class ScheduledParser extends AbstractParser
         string $methodName = '',
         $propertyValue = null
     ) {
-        $collector = TaskCollector::getCollector();
-        if (! isset($collector[$className])) {
-            return;
-        }
-
         TaskCollector::collect($className, $objectAnnotation, $propertyName, $methodName, $propertyValue);
     }
 }

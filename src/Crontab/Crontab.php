@@ -2,10 +2,9 @@
 
 namespace Swoft\Task\Crontab;
 
-use Swoft\Core\ApplicationContext;
+use Swoft\App;
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Memory\Table;
-use Swoft\App;
 use Swoft\Task\Bean\Collector\TaskCollector;
 
 /**

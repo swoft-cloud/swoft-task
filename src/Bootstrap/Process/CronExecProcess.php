@@ -49,7 +49,6 @@ class CronExecProcess implements ProcessInterface
         $serverSetting = App::$server->getServerSetting();
         $cronable = (int)$serverSetting['cronable'];
         if ($cronable !== 1) {
-            output()->writeln('<info>If crontab is to be used, Please set CRONABLE=true by .env file</info>');
             return false;
         }
 

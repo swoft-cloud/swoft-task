@@ -2,15 +2,6 @@
 
 namespace Swoft\Task\Crontab;
 
-/**
- * 解析Crontab规则符
- *
- * @uses      ParseCrontab
- * @version   2017年09月15日
- * @author    caiwh <471113744@qq.com>
- * @copyright Copyright 2010-2016 Swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
- */
 class ParseCrontab
 {
     /**

@@ -4,15 +4,6 @@ namespace Swoft\Task\Crontab;
 
 use Swoft\Memory\Table;
 
-/**
- * crontab内存表结构
- *
- * @uses      TableCrontab
- * @version   2017年10月26日
- * @author    caiwh <471113744@qq.com>
- * @copyright Copyright 2010-2016 Swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
- */
 class TableCrontab
 {
     /**

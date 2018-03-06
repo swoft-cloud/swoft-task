@@ -36,7 +36,7 @@ class BeforeStartListener implements BeforeStartInterface
     {
         /** @var array[] $settings */
         $settings = App::getAppProperties()->get('server');
-        $settings = $settings['server'];
+        $settings = $settings['crontab'];
 
         $taskCount = isset($settings['task_count']) && $settings['task_count'] > 0 ? $settings['task_count'] : null;
         $taskQueue = isset($settings['task_queue']) && $settings['task_queue'] > 0 ? $settings['task_queue'] : null;

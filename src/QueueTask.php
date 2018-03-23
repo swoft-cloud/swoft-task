@@ -2,8 +2,8 @@
 
 namespace Swoft\Task;
 
+use Swoft\App;
 use Swoft\Bean\Annotation\Bean;
-use Swoft\Bean\Annotation\Value;
 use Swoft\Task\Exception\TaskException;
 
 /**
@@ -14,15 +14,11 @@ use Swoft\Task\Exception\TaskException;
 class QueueTask
 {
     /**
-     * @Value(env="${MESSAGE_QUEUE_KEY}")
-     *
      * @var int
      */
     private $messageKey = 0x70001001;
 
     /**
-     * @Value(env="${TASK_TMPDIR}")
-     *
      * @var string
      */
     private $tmp = '/tmp/';
@@ -30,7 +26,17 @@ class QueueTask
     /**
      * @var string
      */
-    private $tmpFile = 'swoole.task';
+    private $tmpFile = 'swoft.task';
+
+    /**
+     * @var int
+     */
+    private $workerNum = 1;
+
+    /**
+     * @var int
+     */
+    private $taskNum = 1;
 
     /**
      * @var mixed
@@ -38,17 +44,63 @@ class QueueTask
     private $queueId = null;
 
     /**
+     * @var int
+     */
+    private $taskId = 0;
+
+    /**
+     * Tmp file
+     */
+    const SW_TASK_TMPFILE = 1;
+
+    /**
+     * Php serialize
+     */
+    const SW_TASK_SERIALIZE = 2;
+
+    /**
+     * Task block
+     */
+    const SW_TASK_NONBLOCK = 4;
+
+    /**
+     * Event
+     */
+    const SW_EVENT_TASK = 7;
+
+    /**
+     * Init
+     */
+    public function init()
+    {
+        $setting = App::$appProperties['server']['setting'];
+
+        $this->tmp        = $setting['task_tmpdir'];
+        $this->workerNum  = $setting['worker_num'];
+        $this->taskNum    = $setting['task_worker_num'];
+        $this->messageKey = $setting['message_queue_key'];
+    }
+
+    /**
      * @param string $data
-     * @param int    $taskId
-     * @param int    $workerId
+     * @param int    $taskWorkerId
+     * @param int    $srcWorkerId
      *
      * @return bool
      */
-    public function deliver(string $data, int $taskId = 0, int $workerId = 1)
+    public function deliver(string $data, int $taskWorkerId = null, $srcWorkerId = null)
     {
+        if ($taskWorkerId === null) {
+            $taskWorkerId = mt_rand($this->workerNum + 1, $this->workerNum + $this->taskNum);
+        }
+
+        if ($srcWorkerId === null) {
+            $srcWorkerId = mt_rand(0, $this->workerNum - 1);
+        }
+
         $this->check();
-        $data   = $this->pack($data, $taskId, $workerId);
-        $result = \msg_send($this->queueId, $workerId, $data, false);
+        $data   = $this->pack($data, $srcWorkerId);
+        $result = \msg_send($this->queueId, $taskWorkerId, $data, false);
         if (!$result) {
             return false;
         }
@@ -64,7 +116,7 @@ class QueueTask
         if (!function_exists('msg_get_queue')) {
             throw new TaskException('You must to compiled php with --enable-sysvmsg');
         }
-        if($this->queueId === null){
+        if ($this->queueId === null) {
             $this->queueId = \msg_get_queue((int)$this->messageKey);
         }
 
@@ -75,29 +127,28 @@ class QueueTask
 
     /**
      * @param string $data
-     * @param string $taskId
-     * @param string $workerId
+     * @param string $srcWorkerId
      *
      * @return string
      */
-    private function pack(string $data, string $taskId, string $workerId): string
+    private function pack(string $data, string $srcWorkerId): string
     {
-        $fromFd = 0;
-        $type   = 7;
+        $flags = self::SW_TASK_NONBLOCK;
+        $type  = self::SW_EVENT_TASK;
         if (!is_string($data)) {
-            $data   = serialize($data);
-            $fromFd |= 2;
+            $data  = serialize($data);
+            $flags |= self::SW_TASK_SERIALIZE;
         }
         if (strlen($data) >= 8180) {
             $tmpFile = tempnam($this->tmp, $this->tmpFile);
             file_put_contents($tmpFile, $data);
-            $data   = pack('l', strlen($data)) . $tmpFile . "\0";
-            $fromFd |= 1;
-            $len    = 128 + 24;
+            $data  = pack('l', strlen($data)) . $tmpFile . "\0";
+            $flags |= self::SW_TASK_TMPFILE;
+            $len   = 128 + 24;
         } else {
             $len = strlen($data);
         }
 
-        return pack('lSsCCS', $taskId, $len, $workerId, $type, 0, $fromFd) . $data;
+        return pack('lSsCCS', $this->taskId++, $len, $srcWorkerId, $type, 0, $flags) . $data;
     }
 }

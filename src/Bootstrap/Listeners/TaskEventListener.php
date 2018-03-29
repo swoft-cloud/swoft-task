@@ -21,7 +21,7 @@ use Swoole\Server;
  */
 class TaskEventListener implements TaskInterface, FinishInterface
 {
-    public function onFinish(Server $server, int $taskId, string $data)
+    public function onFinish(Server $server, int $taskId, $data)
     {
         App::trigger(TaskEvent::FINISH_TASK, $taskId, $data);
     }

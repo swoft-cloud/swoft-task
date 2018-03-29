@@ -6,6 +6,7 @@ use Swoft\App;
 use Swoft\Bean\BeanFactory;
 use Swoft\Pipe\PipeMessage;
 use Swoft\Pipe\PipeMessageInterface;
+use Swoft\Task\Exception\TaskException;
 use Swoft\Task\Helper\TaskHelper;
 
 /**
@@ -33,12 +34,20 @@ class Task
      * @param int    $timeout
      *
      * @return bool|array
+     * @throws TaskException
      */
     public static function deliver(string $taskName, string $methodName, array $params = [], string $type = self::TYPE_CO, $timeout = 3)
     {
-        $server = App::$server->getServer();
         $data   = TaskHelper::pack($taskName, $methodName, $params, $type);
+        if(!App::isWorkerStatus() && !App::isCoContext()){
+            return self::deliverByQueue($data);
+        }
 
+        if(!App::isWorkerStatus() && App::isCoContext()){
+            throw new TaskException('Please deliver task by http!');
+        }
+
+        $server = App::$server->getServer();
         // Delier coroutine task
         if ($type == self::TYPE_CO) {
             $tasks[0]  = $data;
@@ -55,7 +64,14 @@ class Task
         return $server->task($data);
     }
 
-    /**
+    private static function deliverByQueue(string $data)
+    {
+        /* @var \Swoft\Task\QueueTask $queueTask*/
+        $queueTask = App::getBean(QueueTask::class);
+        return $queueTask->deliver($data);
+    }
+
+        /**
      * Deliver task by process
      *
      * @param string $taskName

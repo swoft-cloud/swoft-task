@@ -8,7 +8,6 @@ use Swoft\Core\RequestContext;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
 use Swoft\Task\Event\TaskEvent;
-use Swoft\Task\Task;
 
 /**
  * 任务后置事件

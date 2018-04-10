@@ -5,6 +5,7 @@ namespace Swoft\Task;
 use Swoft\App;
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Core\Coroutine;
+use Swoft\Event\AppEvent;
 use Swoft\Helper\PhpHelper;
 use Swoft\Task\Bean\Collector\TaskCollector;
 use Swoft\Task\Event\Events\BeforeTaskEvent;
@@ -111,6 +112,9 @@ class TaskExecutor
      */
     private function afterTask(string $type)
     {
+        // Release system resources
+        App::trigger(AppEvent::RESOURCE_RELEASE);
+
         App::trigger(TaskEvent::AFTER_TASK, null, $type);
     }
 }

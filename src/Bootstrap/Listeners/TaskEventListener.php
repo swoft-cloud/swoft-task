@@ -8,6 +8,7 @@ use Swoft\Bootstrap\Listeners\Interfaces\FinishInterface;
 use Swoft\Bootstrap\Listeners\Interfaces\TaskInterface;
 use Swoft\Bootstrap\SwooleEvent;
 use Swoft\Core\Coroutine;
+use Swoft\Event\AppEvent;
 use Swoft\Task\Event\TaskEvent;
 use Swoft\Task\TaskExecutor;
 use Swoole\Server;
@@ -36,8 +37,6 @@ class TaskEventListener implements TaskInterface, FinishInterface
      */
     public function onTask(Server $server, int $taskId, int $workerId, $data)
     {
-        Coroutine::initTid();
-
         try {
             /* @var TaskExecutor $taskExecutor*/
             $taskExecutor = App::getBean(TaskExecutor::class);
@@ -45,6 +44,10 @@ class TaskEventListener implements TaskInterface, FinishInterface
         } catch (\Throwable $throwable) {
             App::error(sprintf('TaskExecutor->run %s file=%s line=%d ', $throwable->getMessage(), $throwable->getFile(), $throwable->getLine()));
             $result = false;
+
+            // Release system resources
+            App::trigger(AppEvent::RESOURCE_RELEASE);
+
             App::trigger(TaskEvent::AFTER_TASK);
         }
         return $result;

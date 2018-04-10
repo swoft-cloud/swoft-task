@@ -30,6 +30,7 @@ class ParseCrontab
      */
     public static function parse($crontab_string, $start_time = null)
     {
+        $crontab_string = str_replace("\\", '', $crontab_string);
         if (!preg_match(
             '/^((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)$/i',
             trim($crontab_string)

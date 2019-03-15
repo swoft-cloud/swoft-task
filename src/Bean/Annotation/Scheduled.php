@@ -3,7 +3,7 @@
 namespace Swoft\Task\Bean\Annotation;
 
 /**
- * Scheduled annotation
+ * Scheduled annotation.
  *
  * @Annotation
  * @Target({"METHOD"})

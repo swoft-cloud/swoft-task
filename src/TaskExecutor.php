@@ -35,9 +35,8 @@ class TaskExecutor
         $logid = $data['logid'] ?? uniqid('', true);
         $spanid = $data['spanid'] ?? 0;
 
-
         $collector = TaskCollector::getCollector();
-        if (! isset($collector['task'][$name])) {
+        if (!isset($collector['task'][$name])) {
             return false;
         }
 
@@ -55,6 +54,7 @@ class TaskExecutor
 
     /**
      * @param object $task
+     *
      * @return mixed
      */
     private function runAsyncTask(

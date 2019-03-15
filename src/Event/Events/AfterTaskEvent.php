@@ -5,40 +5,40 @@ namespace Swoft\Task\Event\Events;
 use Swoft\Event\Event;
 
 /**
- * 任务后置事件源
+ * 任务后置事件源.
  */
 class AfterTaskEvent extends Event
 {
     /**
-     * 日志ID
+     * 日志ID.
      *
      * @var string
      */
     private $logid;
 
     /**
-     * 跨度ID
+     * 跨度ID.
      *
      * @var int
      */
     private $spanid;
 
     /**
-     * 任务名称
+     * 任务名称.
      *
      * @var string
      */
     private $taskName;
 
     /**
-     * 方法
+     * 方法.
      *
      * @var string
      */
     private $method;
 
     /**
-     * 任务类型
+     * 任务类型.
      *
      * @var string
      */

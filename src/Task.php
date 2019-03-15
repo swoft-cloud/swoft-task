@@ -14,19 +14,20 @@ use function sprintf;
 class Task
 {
     /**
-     * Coroutine task
+     * Coroutine task.
      */
     const TYPE_CO = 'co';
 
     /**
-     * Async task
+     * Async task.
      */
     const TYPE_ASYNC = 'async';
 
     /**
-     * Deliver a coroutine or async task
+     * Deliver a coroutine or async task.
      *
      * @return bool|array|int
+     *
      * @throws TaskException
      */
     public static function deliver(
@@ -36,15 +37,15 @@ class Task
         string $type = self::TYPE_CO,
         int $timeout = 3
     ) {
-        if (! in_array($type, [static::TYPE_CO, static::TYPE_ASYNC], false)) {
+        if (!in_array($type, [static::TYPE_CO, static::TYPE_ASYNC], false)) {
             throw new TaskException('Invalid task type.');
         }
         $data = TaskHelper::pack($taskName, $methodName, $params, $type);
-        if (! App::isWorkerStatus() && ! App::isCoContext()) {
+        if (!App::isWorkerStatus() && !App::isCoContext()) {
             return static::deliverByQueue($data);
         }
 
-        if (! App::isWorkerStatus() && App::isCoContext()) {
+        if (!App::isWorkerStatus() && App::isCoContext()) {
             throw new TaskException('Deliver in non-worker environment, please deliver the task via HTTP request.');
         }
 
@@ -56,6 +57,7 @@ class Task
                 App::profileStart($prifleKey);
                 $result = $server->taskCo($tasks, $timeout);
                 App::profileEnd($prifleKey);
+
                 return $result;
                 break;
             case static::TYPE_ASYNC:
@@ -69,11 +71,12 @@ class Task
     private static function deliverByQueue(string $data): bool
     {
         $queueTask = bean(QueueTask::class);
+
         return $queueTask->deliver($data);
     }
 
     /**
-     * Deliver task by process
+     * Deliver task by process.
      */
     public static function deliverByProcess(
         string $taskName,
@@ -92,21 +95,22 @@ class Task
             'timeout' => $timeout,
             'type' => $type,
         ]);
+
         return App::$server->getServer()->sendMessage($message, $workerId);
     }
 
     /**
-     * Deliver multiple asynchronous tasks
+     * Deliver multiple asynchronous tasks.
      *
      * @param array $tasks
-     *  <pre>
-     *  $task = [
-     *      'name'   => $taskName,
-     *      'method' => $methodName,
-     *      'params' => $params,
-     *      'type'   => $type
-     *  ];
-     *  </pre>
+     *                     <pre>
+     *                     $task = [
+     *                     'name'   => $taskName,
+     *                     'method' => $methodName,
+     *                     'params' => $params,
+     *                     'type'   => $type
+     *                     ];
+     *                     </pre>
      */
     public static function async(array $tasks): array
     {
@@ -114,7 +118,7 @@ class Task
 
         $result = [];
         foreach ($tasks as $task) {
-            if (! isset($task['type']) || ! isset($task['name']) || ! isset($task['method']) || ! isset($task['params'])) {
+            if (!isset($task['type']) || !isset($task['name']) || !isset($task['method']) || !isset($task['params'])) {
                 App::error(sprintf('Task %s format error.', $task['name'] ?? '[UNKNOWN]'));
                 continue;
             }
@@ -140,23 +144,23 @@ class Task
     }
 
     /**
-     * Deliver multiple coroutine tasks
+     * Deliver multiple coroutine tasks.
      *
      * @param array $tasks
-     *  <pre>
-     *  $tasks = [
-     *      'name'   => $taskName,
-     *      'method' => $methodName,
-     *      'params' => $params,
-     *      'type'   => $type
-     *  ];
-     *  </pre>
+     *                     <pre>
+     *                     $tasks = [
+     *                     'name'   => $taskName,
+     *                     'method' => $methodName,
+     *                     'params' => $params,
+     *                     'type'   => $type
+     *                     ];
+     *                     </pre>
      */
     public static function co(array $tasks): array
     {
         $taskCos = [];
         foreach ($tasks as $task) {
-            if (! isset($task['type']) || ! isset($task['name']) || ! isset($task['method']) || ! isset($task['params'])) {
+            if (!isset($task['type']) || !isset($task['name']) || !isset($task['method']) || !isset($task['params'])) {
                 App::error(sprintf('Task %s format error.', $task['name'] ?? '[UNKNOWN]'));
                 continue;
             }
@@ -171,11 +175,10 @@ class Task
         }
 
         $result = [];
-        if (! empty($taskCos)) {
+        if (!empty($taskCos)) {
             $result = App::$server->getServer()->taskCo($tasks);
         }
 
         return $result;
     }
-
 }

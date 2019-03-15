@@ -6,7 +6,7 @@ use Swoft\Core\RequestContext;
 use Swoft\Task\Task;
 
 /**
- * The task helper
+ * The task helper.
  */
 class TaskHelper
 {
@@ -21,13 +21,13 @@ class TaskHelper
     public static function pack(string $taskName, string $methodName, array $params, string $type = Task::TYPE_CO): string
     {
         $task = [
-            'name'   => $taskName,
+            'name' => $taskName,
             'method' => $methodName,
             'params' => $params,
-            'type'   => $type,
+            'type' => $type,
         ];
 
-        $task['logid']  = RequestContext::getLogid();
+        $task['logid'] = RequestContext::getLogid();
         $task['spanid'] = RequestContext::getSpanid();
 
         return serialize($task);
@@ -38,7 +38,7 @@ class TaskHelper
      *
      * @return array
      */
-    public static function unpack(string $data):array
+    public static function unpack(string $data): array
     {
         return unserialize($data);
     }

@@ -7,7 +7,7 @@ use Swoft\Task\Bean\Annotation\Scheduled;
 use Swoft\Task\Bean\Collector\TaskCollector;
 
 /**
- * Scheduled annotation parser
+ * Scheduled annotation parser.
  */
 class ScheduledParser extends AbstractParser
 {
@@ -17,6 +17,7 @@ class ScheduledParser extends AbstractParser
      * @param string    $propertyName
      * @param string    $methodName
      * @param null      $propertyValue
+     *
      * @return mixed
      */
     public function parser(

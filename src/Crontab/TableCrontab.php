@@ -12,61 +12,61 @@ class TableCrontab
     const TABLE_SIZE = 1024;
 
     /**
-     * @var TableCrontab $instance 实例对象
+     * @var TableCrontab 实例对象
      */
     private static $instance = null;
 
     /**
-     * @var int $taskCount 最大任务数
+     * @var int 最大任务数
      */
     public static $taskCount = 1024;
 
     /**
-     * @var int $taskQueue 最大队列数
+     * @var int 最大队列数
      */
     public static $taskQueue = 1024;
 
     /**
-     * @var \Swoft\Memory\Table $originTable 内存任务表
+     * @var \Swoft\Memory\Table 内存任务表
      */
     private $originTable;
 
     /**
-     * @var \Swoft\Memory\Table $runTimeTable 内存运行表
+     * @var \Swoft\Memory\Table 内存运行表
      */
     private $runTimeTable;
 
     /**
-     * @var array $originStruct 任务表结构
+     * @var array 任务表结构
      */
     private $originStruct = [
-        'rule'       => [\Swoole\Table::TYPE_STRING, 100],
-        'taskClass'  => [\Swoole\Table::TYPE_STRING, 255],
+        'rule' => [\Swoole\Table::TYPE_STRING, 100],
+        'taskClass' => [\Swoole\Table::TYPE_STRING, 255],
         'taskMethod' => [\Swoole\Table::TYPE_STRING, 255],
-        'add_time'   => [\Swoole\Table::TYPE_STRING, 11],
+        'add_time' => [\Swoole\Table::TYPE_STRING, 11],
     ];
 
     /**
-     * @var array $runTimeStruct 运行表结构
+     * @var array 运行表结构
      */
     private $runTimeStruct = [
-        'taskClass'  => [\Swoole\Table::TYPE_STRING, 255],
+        'taskClass' => [\Swoole\Table::TYPE_STRING, 255],
         'taskMethod' => [\Swoole\Table::TYPE_STRING, 255],
-        'minute'      => [\Swoole\Table::TYPE_STRING, 20],
-        'sec'        => [\Swoole\Table::TYPE_STRING, 20],
-        'runStatus'  => [\Swoole\TABLE::TYPE_INT, 4],
+        'minute' => [\Swoole\Table::TYPE_STRING, 20],
+        'sec' => [\Swoole\Table::TYPE_STRING, 20],
+        'runStatus' => [\Swoole\TABLE::TYPE_INT, 4],
     ];
 
     /**
-     * 创建配置表
+     * 创建配置表.
      *
      * @param int $taskCount 最大任务数
      * @param int $taskQueue 最大队列数
      */
     public static function init(int $taskCount = null, int $taskQueue = null)
     {
-        self::$taskCount = $taskCount == null ? self::$taskCount : $taskCount;
-        self::$taskQueue = $taskQueue == null ? self::$taskQueue : $taskQueue;
+        self::$taskCount = null == $taskCount ? self::$taskCount : $taskCount;
+        self::$taskQueue = null == $taskQueue ? self::$taskQueue : $taskQueue;
         self::getInstance();
         self::$instance->initTables();
     }
@@ -77,14 +77,14 @@ class TableCrontab
     public static function getInstance()
     {
         if (!(self::$instance instanceof self)) {
-            self::$instance = new self;
+            self::$instance = new self();
         }
 
         return self::$instance;
     }
 
     /**
-     * 设置内存任务表实例
+     * 设置内存任务表实例.
      *
      * @param Table $table 内存表
      */
@@ -94,7 +94,7 @@ class TableCrontab
     }
 
     /**
-     * 获取内存任务表实例
+     * 获取内存任务表实例.
      */
     public function getOriginTable()
     {
@@ -102,7 +102,7 @@ class TableCrontab
     }
 
     /**
-     * 设置执行任务表实例
+     * 设置执行任务表实例.
      *
      * @param Table $table 执行任务表
      */
@@ -112,7 +112,7 @@ class TableCrontab
     }
 
     /**
-     * 获取执行任务表实例
+     * 获取执行任务表实例.
      *
      * @return Table
      */
@@ -122,7 +122,7 @@ class TableCrontab
     }
 
     /**
-     * 初始化任务表
+     * 初始化任务表.
      */
     private function initTables()
     {
@@ -130,7 +130,7 @@ class TableCrontab
     }
 
     /**
-     * 创建originTable
+     * 创建originTable.
      *
      * @return bool
      */
@@ -142,7 +142,7 @@ class TableCrontab
     }
 
     /**
-     * 创建runTimeTable
+     * 创建runTimeTable.
      *
      * @return bool
      */

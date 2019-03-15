@@ -7,14 +7,14 @@ use Swoft\Bean\Annotation\SwooleListener;
 use Swoft\Bootstrap\Listeners\Interfaces\FinishInterface;
 use Swoft\Bootstrap\Listeners\Interfaces\TaskInterface;
 use Swoft\Bootstrap\SwooleEvent;
-use Swoft\Core\Coroutine;
 use Swoft\Event\AppEvent;
 use Swoft\Task\Event\TaskEvent;
 use Swoft\Task\TaskExecutor;
 use Swoole\Server;
 
 /**
- * The listener of swoole task
+ * The listener of swoole task.
+ *
  * @SwooleListener({
  *     SwooleEvent::ON_TASK,
  *     SwooleEvent::ON_FINISH,
@@ -32,7 +32,9 @@ class TaskEventListener implements TaskInterface, FinishInterface
      * @param int            $taskId
      * @param int            $workerId
      * @param mixed          $data
+     *
      * @return mixed
+     *
      * @throws \InvalidArgumentException
      */
     public function onTask(Server $server, int $taskId, int $workerId, $data)
@@ -50,6 +52,7 @@ class TaskEventListener implements TaskInterface, FinishInterface
 
             App::trigger(TaskEvent::AFTER_TASK);
         }
+
         return $result;
     }
 }

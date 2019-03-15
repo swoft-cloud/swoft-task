@@ -1,6 +1,6 @@
 <?php
 
-use \Swoft\App;
+use Swoft\App;
 
 // Constants
 !defined('DS') && define('DS', DIRECTORY_SEPARATOR);
@@ -13,14 +13,14 @@ use \Swoft\App;
 
 // 注册别名
 $aliases = [
-    '@root'       => BASE_PATH,
-    '@app'        => '@root/app',
-    '@res'        => '@root/resources',
-    '@runtime'    => '@root/runtime',
-    '@configs'    => '@root/config',
-    '@resources'  => '@root/resources',
-    '@beans'      => '@configs/beans',
+    '@root' => BASE_PATH,
+    '@app' => '@root/app',
+    '@res' => '@root/resources',
+    '@runtime' => '@root/runtime',
+    '@configs' => '@root/config',
+    '@resources' => '@root/resources',
+    '@beans' => '@configs/beans',
     '@properties' => '@configs/properties',
-    '@console'    => '@beans/console.php',
+    '@console' => '@beans/console.php',
 ];
 App::setAliases($aliases);

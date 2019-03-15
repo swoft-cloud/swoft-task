@@ -8,7 +8,7 @@ use Swoft\Process\Process as SwoftProcess;
 use Swoft\Process\ProcessInterface;
 
 /**
- * Crontab timer process
+ * Crontab timer process.
  *
  * @Process(name="cronTimer", boot=true)
  */
@@ -44,10 +44,11 @@ class CronTimerProcess implements ProcessInterface
     public function check(): bool
     {
         $serverSetting = App::$server->getServerSetting();
-        $cronable = (int)$serverSetting['cronable'];
-        if ($cronable !== 1) {
+        $cronable = (int) $serverSetting['cronable'];
+        if (1 !== $cronable) {
             return false;
         }
+
         return true;
     }
 }

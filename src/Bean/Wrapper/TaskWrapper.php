@@ -9,21 +9,21 @@ use Swoft\Task\Bean\Annotation\Task;
 use Swoft\Task\Bean\Annotation\Scheduled;
 
 /**
- * Task annotation wrapper
+ * Task annotation wrapper.
  */
 class TaskWrapper extends AbstractWrapper
 {
     /**
-     * 类注解
+     * 类注解.
      *
      * @var array
      */
     protected $classAnnotations = [
-        Task::class
+        Task::class,
     ];
 
     /**
-     * 属性注解
+     * 属性注解.
      *
      * @var array
      */
@@ -33,18 +33,19 @@ class TaskWrapper extends AbstractWrapper
     ];
 
     /**
-     * 方法注解
+     * 方法注解.
      *
      * @var array
      */
     protected $methodAnnotations = [
-        Scheduled::class
+        Scheduled::class,
     ];
 
     /**
-     * 是否解析类注解
+     * 是否解析类注解.
      *
      * @param array $annotations
+     *
      * @return bool
      */
     public function isParseClassAnnotations(array $annotations): bool
@@ -53,9 +54,10 @@ class TaskWrapper extends AbstractWrapper
     }
 
     /**
-     * 是否解析属性注解
+     * 是否解析属性注解.
      *
      * @param array $annotations
+     *
      * @return bool
      */
     public function isParsePropertyAnnotations(array $annotations): bool
@@ -64,9 +66,10 @@ class TaskWrapper extends AbstractWrapper
     }
 
     /**
-     * 是否解析方法注解
+     * 是否解析方法注解.
      *
      * @param array $annotations
+     *
      * @return bool
      */
     public function isParseMethodAnnotations(array $annotations): bool

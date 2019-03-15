@@ -10,7 +10,7 @@ use Swoft\Task\Task;
 use Swoft\Event\AppEvent;
 
 /**
- * The pipe message listener
+ * The pipe message listener.
  *
  * @Listener(event=AppEvent::PIPE_MESSAGE)
  */
@@ -28,14 +28,14 @@ class PipeMessageListener implements EventHandlerInterface
 
         list($type, $data, $srcWorkerId) = $params;
 
-        if ($type != PipeMessage::MESSAGE_TYPE_TASK) {
+        if (PipeMessage::MESSAGE_TYPE_TASK != $type) {
             return;
         }
 
-        $type       = $data['type'];
-        $taskName   = $data['name'];
-        $params     = $data['params'];
-        $timeout    = $data['timeout'];
+        $type = $data['type'];
+        $taskName = $data['name'];
+        $params = $data['params'];
+        $timeout = $data['timeout'];
         $methodName = $data['method'];
 
         // delever task

@@ -56,22 +56,22 @@ class QueueTask
     private $taskId = 0;
 
     /**
-     * Tmp file
+     * Tmp file.
      */
     const SW_TASK_TMPFILE = 1;
 
     /**
-     * Php serialize
+     * Php serialize.
      */
     const SW_TASK_SERIALIZE = 2;
 
     /**
-     * Task block
+     * Task block.
      */
     const SW_TASK_NONBLOCK = 4;
 
     /**
-     * Event
+     * Event.
      */
     const SW_EVENT_TASK = 7;
 
@@ -87,18 +87,18 @@ class QueueTask
 
     public function deliver(string $data, int $taskWorkerId = null, int $srcWorkerId = null): bool
     {
-        if ($taskWorkerId === null) {
+        if (null === $taskWorkerId) {
             $taskWorkerId = mt_rand($this->workerNum + 1, $this->workerNum + $this->taskNum);
         }
 
-        if ($srcWorkerId === null) {
+        if (null === $srcWorkerId) {
             $srcWorkerId = mt_rand(0, $this->workerNum - 1);
         }
 
         $this->check();
         $data = $this->pack($data, $srcWorkerId);
         $result = msg_send($this->queueId, $taskWorkerId, $data, false);
-        if (! $result) {
+        if (!$result) {
             return false;
         }
 
@@ -110,11 +110,11 @@ class QueueTask
      */
     private function check()
     {
-        if (! function_exists('msg_get_queue')) {
+        if (!function_exists('msg_get_queue')) {
             throw new TaskException('You have to compile PHP with --enable-sysvmsg');
         }
-        if ($this->queueId === null) {
-            $this->queueId = msg_get_queue((int)$this->messageKey);
+        if (null === $this->queueId) {
+            $this->queueId = msg_get_queue((int) $this->messageKey);
         }
 
         if (empty($this->queueId)) {
@@ -126,7 +126,7 @@ class QueueTask
     {
         $flags = static::SW_TASK_NONBLOCK;
         $type = static::SW_EVENT_TASK;
-        if (! is_string($data)) {
+        if (!is_string($data)) {
             $data = serialize($data);
             $flags |= static::SW_TASK_SERIALIZE;
         }

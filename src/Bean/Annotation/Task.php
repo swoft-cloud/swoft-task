@@ -3,7 +3,7 @@
 namespace Swoft\Task\Bean\Annotation;
 
 /**
- * Task annotation
+ * Task annotation.
  *
  * @Annotation
  * @Target("CLASS")
@@ -11,7 +11,7 @@ namespace Swoft\Task\Bean\Annotation;
 class Task
 {
     /**
-     * 任务名称
+     * 任务名称.
      *
      * @var string
      */
@@ -43,7 +43,7 @@ class Task
     }
 
     /**
-     * 获取任务名称
+     * 获取任务名称.
      *
      * @return string
      */

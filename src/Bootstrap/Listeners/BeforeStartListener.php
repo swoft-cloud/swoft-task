@@ -9,7 +9,8 @@ use Swoft\Bootstrap\Server\AbstractServer;
 use Swoft\Task\Crontab\TableCrontab;
 
 /**
- * The listener of before start
+ * The listener of before start.
+ *
  * @BeforeStart()
  */
 class BeforeStartListener implements BeforeStartInterface
@@ -24,13 +25,13 @@ class BeforeStartListener implements BeforeStartInterface
         $settings = $settings['server'];
 
         // Init crontab share memory table
-        if (isset($settings['cronable']) && (int)$settings['cronable'] === 1) {
+        if (isset($settings['cronable']) && 1 === (int) $settings['cronable']) {
             $this->initCrontabMemoryTable();
         }
     }
 
     /**
-     * init table of crontab
+     * init table of crontab.
      */
     private function initCrontabMemoryTable()
     {

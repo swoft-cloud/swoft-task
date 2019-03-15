@@ -12,16 +12,16 @@ class CronTest extends AbstractTestCase
      */
     public function cronSyntax()
     {
-        $expect     = [
+        $expect = [
             '* * * * * *',
             '3-5 * * * * *',
-            '*\/3 * * * * *'
+            '*\/3 * * * * *',
         ];
-        $collector  = TaskCollector::getCollector();
+        $collector = TaskCollector::getCollector();
         $scheduleds = array_column($collector['crons'], 'cron');
         foreach ($scheduleds as $scheduled) {
             $this->assertContains($scheduled, $expect);
-            $result  = ParseCrontab::parse($scheduled);
+            $result = ParseCrontab::parse($scheduled);
             $isArray = is_array($result);
             $this->assertTrue($isArray);
         }

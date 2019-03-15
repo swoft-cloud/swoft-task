@@ -9,7 +9,7 @@ use Swoft\Process\ProcessInterface;
 use Swoft\Task\Task;
 
 /**
- * Crontab process
+ * Crontab process.
  *
  * @Process(name="cronExec", boot=true)
  */
@@ -47,8 +47,8 @@ class CronExecProcess implements ProcessInterface
     public function check(): bool
     {
         $serverSetting = App::$server->getServerSetting();
-        $cronable = (int)$serverSetting['cronable'];
-        if ($cronable !== 1) {
+        $cronable = (int) $serverSetting['cronable'];
+        if (1 !== $cronable) {
             return false;
         }
 

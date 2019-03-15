@@ -7,11 +7,10 @@ use Swoft\Task\Bean\Annotation\Scheduled;
 use Swoft\Task\Bean\Annotation\Task;
 
 /**
- * Task annotation collector
+ * Task annotation collector.
  */
 class TaskCollector implements CollectorInterface
 {
-
     /**
      * @var array
      */
@@ -28,6 +27,7 @@ class TaskCollector implements CollectorInterface
      * @param string $propertyName
      * @param string $methodName
      * @param null   $propertyValue
+     *
      * @return void
      */
     public static function collect(
@@ -51,7 +51,7 @@ class TaskCollector implements CollectorInterface
     }
 
     /**
-     * collect the annotation of task
+     * collect the annotation of task.
      *
      * @param string $className
      * @param Task   $objectAnnotation
@@ -65,12 +65,12 @@ class TaskCollector implements CollectorInterface
         self::$tasks['mapping'][$className] = $beanName;
         self::$tasks['task'][$beanName] = [
             $className,
-            $coroutine
+            $coroutine,
         ];
     }
 
     /**
-     * collect the annotation of Scheduled
+     * collect the annotation of Scheduled.
      *
      * @param string    $className
      * @param Scheduled $objectAnnotation
@@ -82,13 +82,13 @@ class TaskCollector implements CollectorInterface
             return;
         }
 
-        $cron     = $objectAnnotation->getCron();
+        $cron = $objectAnnotation->getCron();
         $taskName = self::$tasks['mapping'][$className];
 
         self::$tasks['crons'][] = [
-            'cron'      => $cron,
-            'task'      => $taskName,
-            'method'    => $methodName,
+            'cron' => $cron,
+            'task' => $taskName,
+            'method' => $methodName,
             'className' => $className,
         ];
     }
@@ -100,5 +100,4 @@ class TaskCollector implements CollectorInterface
     {
         return self::$tasks;
     }
-
 }

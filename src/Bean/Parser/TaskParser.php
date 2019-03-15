@@ -8,7 +8,7 @@ use Swoft\Task\Bean\Annotation\Task;
 use Swoft\Task\Bean\Collector\TaskCollector;
 
 /**
- * Task annotation parser
+ * Task annotation parser.
  */
 class TaskParser extends AbstractParser
 {
@@ -18,6 +18,7 @@ class TaskParser extends AbstractParser
      * @param string $propertyName
      * @param string $methodName
      * @param null   $propertyValue
+     *
      * @return array
      */
     public function parser(
@@ -31,6 +32,7 @@ class TaskParser extends AbstractParser
         $beanName = empty($name) ? $className : $name;
 
         TaskCollector::collect($className, $objectAnnotation, $propertyName, $methodName, $propertyValue);
+
         return [$beanName, Scope::SINGLETON, ''];
     }
 }
